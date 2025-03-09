@@ -67,7 +67,7 @@ cd "${__dir}"
 
 # Extract closed captions to external SRT file
 printf "[post-process.sh] %bExtracting subtitles...%b\n" "$GREEN" "$NC"
-#$__ffmpeg -f lavfi -i movie="${__file}[out+subcc]" -map 0:1 "${__base}.en.srt"
+$__ffmpeg -f lavfi -i movie="${__file}[out+subcc]" -map 0:1 "${__base}.en.srt"
 
 # Run comcut/comskip inside the container
 echo "Running Comcut with the following command:"
