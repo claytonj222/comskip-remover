@@ -68,7 +68,7 @@ cd "${__dir}"
 
 # Extract closed captions to external SRT file
 printf "[post-process.sh] %bExtracting subtitles...%b\n" "$GREEN" "$NC"
-$__ccextractor "${__ccextractor}" -o "${__base}.en.srt"
+$__ccextractor "${__file}" -o "${__base}.en.srt"
 
 # Run comcut/comskip inside the container
 echo "Running Comcut with the following command:"
