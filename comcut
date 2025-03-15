@@ -138,9 +138,27 @@ logofile="$workdir${infile%.*}.logo.txt"
 txtfile="$workdir${infile%.*}.txt"
 fi
 
+max_retries=5  # Set a max retry limit to avoid infinite loops
+retry_count=0
+
+while [ ! -f "$edlfile" ] && [ $retry_count -lt $max_retries ]; do
+  echo "Attempt #$((retry_count + 1))"
+  "$comskipPath" "$comskipoutput" --ini="$comskipini" "$workdir$infile"
+
+
+  if [ -f "$edlfile" ]; then
+    echo "EDL file created successfully."
+    break
+  fi
+
+  echo "Retrying..."
+  retry_count=$((retry_count + 1))
+  sleep 2  # Optional delay before retrying
+done
 
 if [ ! -f "$edlfile" ]; then
-  $comskipPath "$comskipoutput" --ini="$comskipini" "$infile"
+  echo "Failed to create EDL file after $max_retries attempts."
+  exit
 fi
 
 start=0
