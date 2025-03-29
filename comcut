@@ -158,6 +158,9 @@ done
 
 if [ ! -f "$edlfile" ]; then
   echo "Failed to create EDL file after $max_retries attempts."
+  if [ ! -z "$lockfile" ]; then
+    rm "$lockfile"
+  fi
   exit
 fi
 
