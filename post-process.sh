@@ -9,6 +9,7 @@ set -o nounset
 
 # Set ffmpeg path to Jellyfin ffmpeg
 __ffmpeg="$(which ffmpeg || echo '/usr/lib/jellyfin-ffmpeg/ffmpeg')"
+__ccextractor="$(which ccextractor)"
 
 # Set to skip commercials (mark as chapters) or cut commercials
 __command="$(pwd)/comcut"
@@ -65,10 +66,6 @@ printf "${GREEN}path:${NC} ${__path}\ndir: ${__dir}\nbase: ${__base}\n"
 # Change to the directory containing the recording
 cd "${__dir}"
 
-# Extract closed captions to external SRT file
-printf "[post-process.sh] %bExtracting subtitles...%b\n" "$GREEN" "$NC"
-$__ffmpeg -f lavfi -i movie="${__file}[out+subcc]" -map 0:1 "${__base}.en.srt"
-
 # Run comcut/comskip inside the container
 echo "Running Comcut with the following command:"
 echo "$__command --ffmpeg=$__ffmpeg --work-dir=\"${__dir}\" --comskip=/usr/bin/comskip --lockfile=/tmp/comchap.lock --comskip-ini=\"${__comskipini}\" \"${__file}\""
@@ -81,6 +78,11 @@ $__ffmpeg -i "${__file}" "${__base}.${__container}"
 # Remove the original recording file
 printf "[post-process.sh] %bRemoving original file...%b\n" "$GREEN" "$NC"
 rm "${__file}"
+
+# Extract closed captions to external SRT file
+printf "[post-process.sh] %bExtracting subtitles...%b\n" "$GREEN" "$NC"
+__file="${__base}.mkv"
+$__ccextractor "${__file}" -o "${__base}.en.srt"
 
 # Return to the starting directory
 cd "${PWD}"
